@@ -113,7 +113,7 @@ public class CompleteWidgetActivity extends Activity {
         cameraConfigWBWidget = findViewById(R.id.camera_config_wb_widget);
         cameraConfigStorageWidget = findViewById(R.id.camera_config_storage_widget);
         cameraConfigSSDWidget = findViewById(R.id.camera_config_ssd_widget);
-        lensControlWidget = findViewById(R.id.camera_lens_control);
+        //lensControlWidget = findViewById(R.id.camera_lens_control);
         controlsWidget = findViewById(R.id.CameraCapturePanel);
         thermalPaletteWidget = findViewById(R.id.thermal_pallette_widget);
     }

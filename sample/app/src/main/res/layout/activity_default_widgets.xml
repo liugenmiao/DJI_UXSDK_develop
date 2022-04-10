@@ -274,14 +274,7 @@
             android:layout_marginBottom="5dp"/>
     </LinearLayout>
 
-    <dji.ux.widget.controls.LensControlWidget
-        android:id="@+id/camera_lens_control"
-        android:layout_width="76dp"
-        android:layout_height="95dp"
-        android:layout_above="@+id/dashboard_widget"
-        android:layout_marginLeft="12dp"
-        android:layout_marginBottom="4dp"
-        android:layout_toEndOf="@id/TakeOffReturnPanel" />
+
 
 
     <dji.ux.widget.ExposeMeteringCenterSwitchWidget
@@ -309,7 +302,7 @@
         android:id="@+id/thermal_pallette_widget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <!-- Panels -->
     <dji.ux.widget.HistogramWidget

@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +28,14 @@ import com.dji.frame.util.V_JsonUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,6 +64,12 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
     private static final String LAST_USED_BRIDGE_IP = "bridgeip";
     private AtomicBoolean isRegistrationInProgress = new AtomicBoolean(false);
     private static boolean isAppStarted = false;
+    private InetAddress mAddress;
+    private DatagramSocket mSocket = null;
+    private String mUdpIp = "192.168.1.105";
+    private int mSendPort = 8888;
+    private byte[] mSendBuf;
+
     private DJISDKManager.SDKManagerCallback registrationCallback = new DJISDKManager.SDKManagerCallback() {
 
         @Override
@@ -88,7 +103,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
                     //mediaFileInfo.getIndex();
                     Toast.makeText(getApplicationContext(), "NewFileInfoCallback",
                             Toast.LENGTH_SHORT).show();
-                    //DJISDKManager.getInstance().getProduct().getCamera().getMediaManager().;
+                    //DJISDKManager.getInstance().getProduct().getCamera().getMediaManager()
                 }
             });
             //DJISDKManager.getInstance().getProduct().getGimbal().
@@ -97,6 +112,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
                 public void onUpdate(@NonNull GimbalState gimbalState) {
                     Toast.makeText(getApplicationContext(), "gimbal",
                             Toast.LENGTH_SHORT).show();
+
+                    float pitch = gimbalState.getAttitudeInDegrees().getPitch();
+                    float roll = gimbalState.getAttitudeInDegrees().getRoll();
+                    float yaw = gimbalState.getAttitudeInDegrees().getYaw();
                 }
             });
             Aircraft aircraft = (Aircraft) DJISDKManager.getInstance().getProduct();
@@ -105,6 +124,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
                 public void onUpdate(@NonNull FlightControllerState flightControllerState) {
                     //Toast.makeText(getApplicationContext(), "flightControllerState",
                     //        Toast.LENGTH_SHORT).show();
+                    double pitch = flightControllerState.getAttitude().pitch;
+                    double roll = flightControllerState.getAttitude().roll;
+                    double yaw = flightControllerState.getAttitude().yaw;
+
+                    double lat = flightControllerState.getAircraftLocation().getLatitude();
+                    double lon = flightControllerState.getAircraftLocation().getLongitude();
+                    double alt = flightControllerState.getAircraftLocation().getAltitude();
                 }
             });
             //FlightController.
@@ -140,6 +166,40 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
                     Toast.LENGTH_LONG).show();
         }
     };
+
+    public void sendUDPMessage(final String msg) {
+
+        // 初始化socket
+        try {
+            mSocket = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        try {
+            mAddress = InetAddress.getByName(mUdpIp);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mSendBuf = msg.getBytes("utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                DatagramPacket recvPacket1 = new DatagramPacket(mSendBuf, mSendBuf.length, mAddress, mSendPort);
+                try {
+                    mSocket.send(recvPacket1);
+                    mSocket.close();
+                    Log.e(TAG, "sendUDPMessage msg：" + msg);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
     public static boolean isStarted() {
         return isAppStarted;
@@ -214,6 +274,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
             }
         });
         checkAndRequestPermissions();
+
+        Class nextActivityClass;
+
+        nextActivityClass = CompleteWidgetActivity.class;
+        Intent intent = new Intent(this, nextActivityClass);
+
+        startActivity(intent);
+
+        sendUDPMessage("Hello World");
     }
 
     @Override

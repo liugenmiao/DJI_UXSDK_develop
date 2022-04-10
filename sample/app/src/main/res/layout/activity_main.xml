@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingEnd="60dp"
-    android:paddingStart="60dp"
+    android:paddingEnd="0dp"
+    android:paddingStart="0dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TableRow
-        android:paddingTop="40dp"
-        android:layout_weight="1"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
-
+        android:layout_height="match_parent"
+        android:elevation="10px"
+        android:src="@color/blue"/>
     <Button
         android:id="@+id/complete_ui_widgets"
         android:layout_width="match_parent"
@@ -24,6 +23,7 @@
         android:text="Complete Demo of Default UI Widgets"/>
     <Button
         android:id="@+id/bt_customized_ui_widgets"
+        android:layout_below="@id/complete_ui_widgets"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -33,6 +33,7 @@
         android:text="Demo on Customized UI Widgets"/>
     <Button
         android:id="@+id/bt_map_widget"
+        android:layout_below="@id/bt_customized_ui_widgets"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -48,7 +49,8 @@
 
     <EditText
         android:id="@+id/edittext_bridge_ip"
-        android:layout_width="wrap_content"
+        android:layout_below="@id/bt_map_widget"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@color/gray"
@@ -65,6 +67,7 @@
 
     <TextView
         android:id="@+id/version"
+        android:layout_below="@id/edittext_bridge_ip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -73,4 +76,4 @@
         android:gravity="center"
         tools:text="Version"/>
 
-</TableLayout>
+</RelativeLayout>
